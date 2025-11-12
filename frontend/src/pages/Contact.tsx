@@ -1,37 +1,32 @@
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, Clock, CheckCircle } from 'lucide-react';
-import { contactService } from '../utils/api';
+import React, { useState, useRef } from "react";
+import { Mail, Phone, MapPin, Send, Clock, CheckCircle } from "lucide-react";
+import emailjs from "@emailjs/browser";
 
 const Contact: React.FC = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
+  const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+// EmailJS credentials from .env
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID as string;
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string;
+const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string;
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
     setSuccess(false);
+    setError("");
 
     try {
-      await contactService.submitContact(formData);
+      await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current!, PUBLIC_KEY);
       setSuccess(true);
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to send message');
+      formRef.current?.reset();
+    } catch (err) {
+      console.error(err);
+      setError("Failed to send message. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -40,21 +35,21 @@ const Contact: React.FC = () => {
   const contactInfo = [
     {
       icon: Phone,
-      title: 'Phone',
-      details: '+94 1123456789',
-      subtitle: 'Monday to Friday, 9am to 6pm EST',
+      title: "Phone",
+      details: "+94 1123456789",
+      subtitle: "Monday to Friday, 9am to 6pm EST",
     },
     {
       icon: Mail,
-      title: 'Email',
-      details: 'info@modernba.com',
-      subtitle: 'We typically respond within 24 hours',
+      title: "Email",
+      details: "info@modernba.com",
+      subtitle: "We typically respond within 24 hours",
     },
     {
       icon: MapPin,
-      title: 'Address',
-      details: '123 Business',
-      subtitle: 'Modern Academy',
+      title: "Address",
+      details: "123 Business Street",
+      subtitle: "Modern Academy",
     },
   ];
 
@@ -81,7 +76,7 @@ const Contact: React.FC = () => {
               <h2 className="font-heading text-2xl font-bold text-neutral-800 mb-8">
                 Get in Touch
               </h2>
-              
+
               <div className="space-y-6">
                 {contactInfo.map((info, index) => (
                   <div key={index} className="flex items-start space-x-4">
@@ -132,7 +127,9 @@ const Contact: React.FC = () => {
                 {success && (
                   <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                    <span className="text-green-800">Message sent successfully! We'll get back to you soon.</span>
+                    <span className="text-green-800">
+                      Message sent successfully! We'll get back to you soon.
+                    </span>
                   </div>
                 )}
 
@@ -142,7 +139,7 @@ const Contact: React.FC = () => {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-2">
@@ -152,8 +149,6 @@ const Contact: React.FC = () => {
                         type="text"
                         id="name"
                         name="name"
-                        value={formData.name}
-                        onChange={handleChange}
                         required
                         className="input"
                         placeholder="Your full name"
@@ -167,8 +162,6 @@ const Contact: React.FC = () => {
                         type="email"
                         id="email"
                         name="email"
-                        value={formData.email}
-                        onChange={handleChange}
                         required
                         className="input"
                         placeholder="your.email@example.com"
@@ -184,8 +177,6 @@ const Contact: React.FC = () => {
                       type="text"
                       id="subject"
                       name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
                       required
                       className="input"
                       placeholder="What is this regarding?"
@@ -199,8 +190,6 @@ const Contact: React.FC = () => {
                     <textarea
                       id="message"
                       name="message"
-                      value={formData.message}
-                      onChange={handleChange}
                       required
                       rows={6}
                       className="input resize-none"
@@ -228,46 +217,6 @@ const Contact: React.FC = () => {
                 </form>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-heading text-3xl font-bold text-neutral-800 mb-4">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-xl text-neutral-600">
-              Find answers to common questions about our programs and services.
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            {[
-              {
-                question: 'How do I enroll in a course?',
-                answer: 'You can enroll in any course by creating an account, browsing our course catalog, and clicking the "Enroll Now" button on the course page.',
-              },
-              {
-                question: 'Are there any prerequisites for the courses?',
-                answer: 'Prerequisites vary by course. Each course page lists specific requirements. Most beginner courses have no prerequisites.',
-              },
-              {
-                question: 'Do you offer certificates upon completion?',
-                answer: 'Yes, we provide certificates of completion for all our courses. These certificates can be downloaded and shared on professional networks.',
-              },
-              {
-                question: 'What is your refund policy?',
-                answer: 'We offer a 30-day money-back guarantee. If you\'re not satisfied with a course within 30 days of enrollment, you can request a full refund.',
-              },
-            ].map((faq, index) => (
-              <div key={index} className="border border-neutral-200 rounded-lg p-6">
-                <h3 className="font-semibold text-neutral-800 mb-2">{faq.question}</h3>
-                <p className="text-neutral-600">{faq.answer}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>

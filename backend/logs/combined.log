@@ -1199,3 +1199,5 @@
 {"exp":1763554656,"iat":1762949856,"level":"info","message":"Token successfully decoded:","service":"modern-business-academy","timestamp":"2025-11-12T12:17:52.418Z","userId":"68d221f916a56858ace061f8"}
 {"level":"info","message":"User logged in: sanjithnagaraja@gmail.com","service":"modern-business-academy","timestamp":"2025-11-12T12:19:42.742Z"}
 {"exp":1763554782,"iat":1762949982,"level":"info","message":"Token successfully decoded:","service":"modern-business-academy","timestamp":"2025-11-12T12:20:00.380Z","userId":"68d221f916a56858ace061f8"}
+{"level":"info","message":"Connected to MongoDB","service":"modern-business-academy","timestamp":"2025-11-12T16:44:56.038Z"}
+{"level":"info","message":"Server running on port 5000","service":"modern-business-academy","timestamp":"2025-11-12T16:44:56.046Z"}
