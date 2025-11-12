@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, User, LogOut, BookOpen, Settings, GraduationCap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import GoogleLoginButton from './GoogleLoginButton';
-import logo from '../Assets/logo.jpg';
 import logo1 from '../Assets/mba_logo.jpg';
 
 const Navbar: React.FC = () => {
