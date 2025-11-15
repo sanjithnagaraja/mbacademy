@@ -13,7 +13,7 @@
     }
   ],
   "env": {
-    
+    "MONGO_URI":"mongodb+srv://mbauser:mbapassword@cluster0.b1rnj9b.mongodb.net/mbatest?retryWrites=true&w=majority&appName=Cluster0",
     "JWT_SECRET": "f66db4ec116f3",
     "FRONTEND_URL": "https://mbacademy.vercel.app"
   }
