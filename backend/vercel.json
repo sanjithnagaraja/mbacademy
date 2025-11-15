@@ -11,5 +11,10 @@
       "src": "/api/(.*)",
       "dest": "/server.js"
     }
-  ]
+  ],
+  "env": {
+    
+    "JWT_SECRET": "f66db4ec116f3",
+    "FRONTEND_URL": "https://mbacademy.vercel.app"
+  }
 }
