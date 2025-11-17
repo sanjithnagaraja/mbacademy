@@ -19,36 +19,30 @@ import healthRoutes from './src/routes/health.js';
 import { errorHandler } from './src/middleware/errorHandler.js';
 import logger from './src/services/logger.js';
 
-// Configure environment
+// Load environment variables
 dotenv.config();
-console.log("Port",process.env.PORT);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+export { app };
 
-// Security middleware
+// ===== Middleware =====
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 
-// Rate limiting
-const limiter = rateLimit({
+app.use(rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 100,
   message: 'Too many requests from this IP, please try again later.'
-});
-app.use(limiter);
+}));
 
-// Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-
-// Passport middleware
 app.use(passport.initialize());
 
-// Routes
+// ===== Routes =====
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
@@ -57,26 +51,40 @@ app.use('/api/files', fileRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/health', healthRoutes);
 
-// Error handling middleware
+// ===== Error handling =====
 app.use(errorHandler);
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    logger.info('Connected to MongoDB');
-    app.listen(PORT, () => {
-      logger.info(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    logger.error('Database connection error:', error);
-    process.exit(1);
-  });
+// ===== MongoDB Connection (Singleton for Serverless) =====
+let isConnected = false;
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received, shutting down gracefully');
-  mongoose.connection.close(() => {
-    process.exit(0);
-  });
-});
+async function connectDB() {
+  if (isConnected) return;
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    isConnected = true;
+    logger.info('Connected to MongoDB');
+  } catch (err) {
+    logger.error('MongoDB connection error:', err);
+  }
+}
+
+// ===== Serverless handler =====
+// For Vercel's `@vercel/node` runtime we can export a function that
+// ensures DB connection and then forwards the request to the Express app.
+// Avoid using `serverless-http` here to prevent double-wrapping issues.
+export default async (req, res) => {
+  await connectDB();
+  return app(req, res);
+};
+
+// If running locally for development/testing, start a listener so we can
+// run a quick smoke test (`LOCAL_DEV=true node server.js`).
+if (process.env.LOCAL_DEV === 'true') {
+  (async () => {
+    await connectDB();
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+      logger.info(`Local dev server listening on port ${port}`);
+    });
+  })();
+}

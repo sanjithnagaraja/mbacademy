@@ -1,5 +1,21 @@
 import winston from 'winston';
 
+const transports = [];
+
+// In production serverless environments (like Vercel) writing to disk
+// may be restricted. Enable file transports only when explicitly allowed.
+if (process.env.ENABLE_FILE_LOGS === 'true') {
+  transports.push(new winston.transports.File({ filename: 'logs/error.log', level: 'error' }));
+  transports.push(new winston.transports.File({ filename: 'logs/combined.log' }));
+}
+
+// Always add a console transport so logs are visible in Vercel function logs.
+transports.push(new winston.transports.Console({
+  format: process.env.NODE_ENV !== 'production'
+    ? winston.format.combine(winston.format.colorize(), winston.format.simple())
+    : winston.format.combine(winston.format.timestamp(), winston.format.json())
+}));
+
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: winston.format.combine(
@@ -8,20 +24,7 @@ const logger = winston.createLogger({
     winston.format.json()
   ),
   defaultMeta: { service: 'modern-business-academy' },
-  transports: [
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
-  ],
+  transports
 });
-
-// Add console transport for non-production environments
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple()
-    )
-  }));
-}
 
 export default logger;
