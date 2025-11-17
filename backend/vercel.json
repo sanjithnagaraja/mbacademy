@@ -7,7 +7,7 @@
     { "src": "/api/(.*)", "dest": "/server.js" }
   ],
   "env": {
-    "MONGO_URI": "your_mongo_uri_here",
+    "MONGO_URI": "mongodb+srv://mbauser:mbapassword@cluster0.b1rnj9b.mongodb.net/mbatest?retryWrites=true&w=majority&appName=Cluster0",
     "JWT_SECRET": "f66db4ec116f3",
     "FRONTEND_URL": "https://modernbusinessacademy.edu.lk/"
   }
