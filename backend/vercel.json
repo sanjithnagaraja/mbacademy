@@ -1,20 +1,13 @@
-
 {
   "version": 2,
   "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    }
+    { "src": "server.js", "use": "@vercel/node" }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server.js"
-    }
+    { "src": "/api/(.*)", "dest": "/server.js" }
   ],
   "env": {
-    "MONGO_URI":"mongodb+srv://mbauser:mbapassword@cluster0.b1rnj9b.mongodb.net/mbatest?retryWrites=true&w=majority&appName=Cluster0",
+    "MONGO_URI": "your_mongo_uri_here",
     "JWT_SECRET": "f66db4ec116f3",
     "FRONTEND_URL": "https://modernbusinessacademy.edu.lk/"
   }
