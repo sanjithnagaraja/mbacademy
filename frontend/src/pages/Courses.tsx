@@ -179,17 +179,17 @@ const Courses: React.FC = () => {
                       {course.description}
                     </p>
 
-                    <div className="flex items-center mb-4">
+                    {/* <div className="flex items-center mb-4">
                       <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
                         {course.instructor.name.charAt(0)}
                       </div>
                       <div>
                         <p className="text-sm font-medium text-neutral-800">
                           {course.instructor.name}
-                        </p>
+                        </p> 
                         <p className="text-xs text-neutral-500">Instructor</p>
                       </div>
-                    </div>
+                    </div> */}
 
                     <div className="flex items-center justify-between text-sm text-neutral-600 mb-4">
                       <div className="flex items-center">
